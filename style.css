@@ -227,3 +227,10 @@ table.tableau tr:nth-child(even) td {
     flex-direction: column;
   }
 }
+
+footer {
+  text-align: center;
+  padding: 24px 0 16px;
+  color: #475569;
+  font-size: 0.85rem;
+}
