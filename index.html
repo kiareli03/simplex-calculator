@@ -19,94 +19,58 @@
     </div>
   </div>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <span class="nav-brand">Simplex</span>
     <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="calculator">Calculadora</button>
-      <button class="nav-tab" data-tab="history">Histórico</button>
-      <button class="nav-tab" data-tab="profile">Perfil</button>
+      <a href="index.html" class="nav-tab active">Calculadora</a>
+      <a href="historico.html" class="nav-tab">Histórico</a>
+      <a href="perfil.html" class="nav-tab">Perfil</a>
     </div>
   </nav>
 
-  <!-- Aba: Calculadora -->
-  <div class="tab-content active" id="tab-calculator">
-    <div class="container">
-      <h1>Calculadora Simplex Gráfica</h1>
+  <div class="container">
+    <h1>Calculadora Simplex Gráfica</h1>
 
-      <div class="panel">
-        <section class="input-section">
-          <h2>Função Objetivo</h2>
-          <div class="objective-row">
-            <label>Otimizar:</label>
-            <select id="optType">
-              <option value="max">Maximizar</option>
-              <option value="min">Minimizar</option>
-            </select>
-          </div>
-          <div class="objective-row">
-            <label>Z =</label>
-            <input type="number" id="c1" value="5" step="any" /> x₁ +
-            <input type="number" id="c2" value="4" step="any" /> x₂
-          </div>
-
-          <h2>Restrições</h2>
-          <div id="constraints-list"></div>
-          <div class="btn-group">
-            <button id="addConstraint">+ Restrição</button>
-            <button id="removeConstraint">− Restrição</button>
-          </div>
-
-          <div class="solve-row">
-            <button id="solveBtn" class="primary">Resolver</button>
-            <button id="resetBtn">Limpar</button>
-          </div>
-        </section>
-
-        <section class="result-section" id="resultSection" style="display:none">
-          <h2>Resultado</h2>
-          <div id="resultContent"></div>
-          <h2>Tableau</h2>
-          <div id="tableauContent" class="tableau-wrap"></div>
-        </section>
-      </div>
-
-      <div class="graph-section">
-        <h2>Região Viável</h2>
-        <canvas id="graph" width="600" height="500"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- Aba: Histórico -->
-  <div class="tab-content" id="tab-history">
-    <div class="container-page">
-      <div class="page-header">
-        <h1>Histórico de Cálculos</h1>
-        <button id="clearHistory" class="danger">Limpar histórico</button>
-      </div>
-      <div id="historyList"></div>
-    </div>
-  </div>
-
-  <!-- Aba: Perfil -->
-  <div class="tab-content" id="tab-profile">
-    <div class="container-page">
-      <h1>Perfil</h1>
-      <div class="profile-card">
-        <div class="profile-avatar" id="profileAvatar"></div>
-        <div>
-          <div class="profile-name" id="profileName"></div>
-          <div class="profile-stats" id="profileStats"></div>
+    <div class="panel">
+      <section class="input-section">
+        <h2>Função Objetivo</h2>
+        <div class="objective-row">
+          <label>Otimizar:</label>
+          <select id="optType">
+            <option value="max">Maximizar</option>
+            <option value="min">Minimizar</option>
+          </select>
         </div>
-      </div>
-      <div class="profile-edit-card">
-        <label>Alterar nome</label>
-        <div class="profile-edit-row">
-          <input type="text" id="profileNameInput" maxlength="40" />
-          <button id="profileSave" class="primary">Salvar</button>
+        <div class="objective-row">
+          <label>Z =</label>
+          <input type="number" id="c1" value="5" step="any" /> x₁ +
+          <input type="number" id="c2" value="4" step="any" /> x₂
         </div>
-      </div>
+
+        <h2>Restrições</h2>
+        <div id="constraints-list"></div>
+        <div class="btn-group">
+          <button id="addConstraint">+ Restrição</button>
+          <button id="removeConstraint">− Restrição</button>
+        </div>
+
+        <div class="solve-row">
+          <button id="solveBtn" class="primary">Resolver</button>
+          <button id="resetBtn">Limpar</button>
+        </div>
+      </section>
+
+      <section class="result-section" id="resultSection" style="display:none">
+        <h2>Resultado</h2>
+        <div id="resultContent"></div>
+        <h2>Tableau</h2>
+        <div id="tableauContent" class="tableau-wrap"></div>
+      </section>
+    </div>
+
+    <div class="graph-section">
+      <h2>Região Viável</h2>
+      <canvas id="graph" width="600" height="500"></canvas>
     </div>
   </div>
 
