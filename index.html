@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora Simplex</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora Simplex Gráfica</h1>
+
+    <div class="panel">
+      <section class="input-section">
+        <h2>Função Objetivo</h2>
+        <div class="objective-row">
+          <label>Otimizar:</label>
+          <select id="optType">
+            <option value="max">Maximizar</option>
+            <option value="min">Minimizar</option>
+          </select>
+        </div>
+        <div class="objective-row">
+          <label>Z =</label>
+          <input type="number" id="c1" value="5" step="any" /> x₁ +
+          <input type="number" id="c2" value="4" step="any" /> x₂
+        </div>
+
+        <h2>Restrições</h2>
+        <div id="constraints-list"></div>
+        <div class="btn-group">
+          <button id="addConstraint">+ Restrição</button>
+          <button id="removeConstraint">− Restrição</button>
+        </div>
+
+        <div class="solve-row">
+          <button id="solveBtn" class="primary">Resolver</button>
+          <button id="resetBtn">Limpar</button>
+        </div>
+      </section>
+
+      <section class="result-section" id="resultSection" style="display:none">
+        <h2>Resultado</h2>
+        <div id="resultContent"></div>
+        <h2>Tableau</h2>
+        <div id="tableauContent" class="tableau-wrap"></div>
+      </section>
+    </div>
+
+    <div class="graph-section">
+      <h2>Região Viável</h2>
+      <canvas id="graph" width="600" height="500"></canvas>
+    </div>
+  </div>
+
+  <script src="simplex.js"></script>
+  <script src="graph.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
