@@ -11,9 +11,10 @@ Não depende de nenhuma biblioteca ou framework externo — é HTML, CSS e JavaS
 ## Como usar
 
 1. Abra o arquivo `index.html` no navegador.
-2. Informe os coeficientes da **função objetivo** (Z = c₁x₁ + c₂x₂) e escolha entre **Maximizar** ou **Minimizar**.
-3. Preencha as **restrições** (até 6). Cada restrição aceita os sinais ≤, ≥ ou =.
-4. Clique em **Resolver**.
+2. Na primeira visita, um modal solicita seu nome — ele é salvo no navegador para uso futuro.
+3. Informe os coeficientes da **função objetivo** (Z = c₁x₁ + c₂x₂) e escolha entre **Maximizar** ou **Minimizar**.
+4. Preencha as **restrições** (até 6). Cada restrição aceita os sinais ≤, ≥ ou =.
+5. Clique em **Resolver**.
 
 A calculadora mostra:
 - Os valores ótimos de x₁ e x₂
@@ -22,17 +23,23 @@ A calculadora mostra:
 - O tableau da última iteração
 - O gráfico com a região viável preenchida e o ponto ótimo destacado
 
+Cada cálculo é salvo automaticamente no histórico, acessível pela navbar.
+
 ---
 
 ## Estrutura dos arquivos
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `index.html` | Estrutura da interface (formulário, botões, canvas) |
-| `style.css` | Estilo visual (tema escuro, layout responsivo) |
+| `index.html` | Página da calculadora (formulário, botões, canvas, modal de perfil) |
+| `historico.html` | Página do histórico de cálculos |
+| `perfil.html` | Página do perfil do usuário |
+| `style.css` | Estilo visual compartilhado (tema escuro, navbar, layout responsivo) |
 | `simplex.js` | Algoritmo Simplex, cálculo de vértices e geometria |
 | `graph.js` | Desenho do gráfico no canvas (eixos, restrições, região viável) |
-| `main.js` | Lógica da interface: lê entradas, chama o Simplex e atualiza a tela |
+| `main.js` | Lógica da calculadora, salvamento no histórico e modal de primeiro acesso |
+| `historico.js` | Leitura e renderização do histórico a partir do localStorage |
+| `perfil.js` | Exibição e edição do perfil do usuário |
 
 ---
 
@@ -67,6 +74,9 @@ O `simplex.js` também calcula os vértices da região viável testando todas as
 ### 6. Desenho do gráfico
 O `graph.js` usa a API Canvas do HTML5 para desenhar a grade, os eixos, as retas de cada restrição (tracejadas e coloridas), a região viável preenchida (fecho convexo dos vértices), a reta da função objetivo no ponto ótimo e o ponto ótimo destacado.
 
+### 7. Histórico e perfil
+Cada cálculo realizado pelo usuário é serializado em JSON e armazenado no `localStorage` do navegador sob a chave `simplex_history`. O nome do usuário é armazenado sob `simplex_name`. As páginas de histórico e perfil leem essas chaves diretamente ao carregar.
+
 ---
 
 ## Limitações da versão atual
@@ -76,16 +86,18 @@ O `graph.js` usa a API Canvas do HTML5 para desenhar a grade, os eixos, as retas
 - Não trata problemas com **múltiplas soluções ótimas**.
 - Não exibe o **passo a passo** das iterações do Simplex — apenas o tableau final.
 - Não aceita variáveis que possam ser **negativas** (assume x₁, x₂ ≥ 0).
+- O histórico é local por navegador — não sincroniza entre dispositivos.
 
 ---
 
 ## Melhorias para versões futuras
 
 ### Interface e usabilidade
-- [ ] **Histórico de iterações**: exibir cada passo do Simplex em abas ou em uma lista expansível, mostrando qual pivô foi escolhido e por quê.
+- [ ] **Passo a passo das iterações**: exibir cada tableau intermediário com o pivô destacado, explicando a escolha.
 - [ ] **Entrada por fórmula em texto**: permitir digitar restrições no formato `6x1 + 4x2 <= 24` em vez de campos separados.
 - [ ] **Exportar resultado**: botão para baixar o resultado e o tableau como PDF ou imagem PNG.
 - [ ] **Modo claro/escuro**: alternar entre temas.
+- [ ] **Recarregar cálculo do histórico**: clicar em um item do histórico e restaurar os dados na calculadora.
 
 ### Algoritmo e funcionalidades matemáticas
 - [ ] **Suporte a 3 variáveis**: resolver e exibir a região viável em 3D usando WebGL ou Three.js.
@@ -99,4 +111,5 @@ O `graph.js` usa a API Canvas do HTML5 para desenhar a grade, os eixos, as retas
 - [ ] **Testes automatizados**: adicionar uma suite de testes (ex: com Vitest ou Jest) cobrindo casos como solução única, ilimitado, inviável e múltiplas soluções.
 - [ ] **Validação de entradas**: alertas mais detalhados indicando exatamente qual campo está com valor inválido ou inconsistente.
 - [ ] **Responsividade melhorada**: layout adaptado para telas pequenas (mobile), com o gráfico redimensionável.
+- [ ] **Sincronização em nuvem**: salvar histórico e perfil em um backend para acessar de qualquer dispositivo.
 - [ ] **Internacionalização**: suporte a inglês e espanhol além do português.
