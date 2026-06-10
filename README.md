@@ -1,5 +1,7 @@
 # Calculadora Simplex Gráfica
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 Calculadora de **programação linear** que resolve problemas com até 2 variáveis de decisão usando o **Método Simplex**, com visualização gráfica da região viável e do ponto ótimo.
 
 Roda diretamente no navegador, sem dependências externas.
