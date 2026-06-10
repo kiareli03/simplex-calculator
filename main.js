@@ -106,7 +106,8 @@ function fmtNum(v) {
 }
 
 // Lê os dados do formulário, executa o Simplex e exibe o resultado, o tableau e o gráfico.
-function solve() {
+// O parâmetro saveHist controla se o resultado deve ser salvo no histórico.
+function solve(saveHist = false) {
   const c = [
     parseFloat(document.getElementById('c1').value) || 0,
     parseFloat(document.getElementById('c2').value) || 0,
@@ -149,6 +150,22 @@ function solve() {
     tableauContent.innerHTML = '';
     drawGraph(document.getElementById('graph'), A, b, c, optType, vertices, null);
   }
+
+  if (saveHist) {
+    const now = new Date();
+    const p = n => String(n).padStart(2, '0');
+    addToHistory({
+      date: `${p(now.getDate())}/${p(now.getMonth() + 1)}/${now.getFullYear()} ${p(now.getHours())}:${p(now.getMinutes())}`,
+      optType,
+      c1: c[0],
+      c2: c[1],
+      status: result.status,
+      x1: result.status === 'optimal' ? fmtNum(result.x[0]) : null,
+      x2: result.status === 'optimal' ? fmtNum(result.x[1]) : null,
+      z:  result.status === 'optimal' ? fmtNum(result.z)     : null,
+      iterations: result.status === 'optimal' ? result.steps.length - 1 : null,
+    });
+  }
 }
 
 // Restaura todos os campos do formulário para os valores padrão e limpa o gráfico.
@@ -162,6 +179,147 @@ function reset() {
   const canvas = document.getElementById('graph');
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 }
+
+// ── Perfil ──
+
+// Retorna o nome salvo no localStorage.
+function getProfileName() {
+  return localStorage.getItem('simplex_name') || null;
+}
+
+// Salva o nome do usuário no localStorage.
+function saveProfileName(name) {
+  localStorage.setItem('simplex_name', name.trim());
+}
+
+// Atualiza os elementos visuais da aba de perfil com os dados atuais.
+function renderProfile() {
+  const name = getProfileName();
+  if (!name) return;
+  const count = getHistory().length;
+  document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileStats').textContent =
+    `${count} cálculo${count !== 1 ? 's' : ''} realizado${count !== 1 ? 's' : ''}`;
+  document.getElementById('profileNameInput').value = name;
+}
+
+// Exibe o modal de boas-vindas se o usuário ainda não informou o nome.
+function initProfile() {
+  if (!getProfileName()) {
+    document.getElementById('profileModal').classList.add('visible');
+    setTimeout(() => document.getElementById('nameInput').focus(), 100);
+  }
+  renderProfile();
+}
+
+document.getElementById('nameSubmit').addEventListener('click', () => {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return;
+  saveProfileName(name);
+  document.getElementById('profileModal').classList.remove('visible');
+  renderProfile();
+});
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('nameSubmit').click();
+});
+
+document.getElementById('profileSave').addEventListener('click', () => {
+  const name = document.getElementById('profileNameInput').value.trim();
+  if (!name) return;
+  saveProfileName(name);
+  renderProfile();
+  const btn = document.getElementById('profileSave');
+  btn.textContent = 'Salvo!';
+  setTimeout(() => { btn.textContent = 'Salvar'; }, 1500);
+});
+
+// ── Histórico ──
+
+// Retorna o array de histórico armazenado no localStorage.
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem('simplex_history') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+// Adiciona uma entrada ao histórico (mais recente primeiro) e limita a 50 registros.
+function addToHistory(entry) {
+  const history = getHistory();
+  history.unshift(entry);
+  if (history.length > 50) history.pop();
+  localStorage.setItem('simplex_history', JSON.stringify(history));
+  renderProfile();
+}
+
+// Renderiza os cards de histórico na aba correspondente.
+function renderHistory() {
+  const history = getHistory();
+  const list = document.getElementById('historyList');
+
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">Nenhum cálculo realizado ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = history.map(entry => {
+    const optLabel = entry.optType === 'max' ? 'Max' : 'Min';
+    const objStr = `${optLabel} Z = ${entry.c1}x₁ + ${entry.c2}x₂`;
+
+    if (entry.status === 'optimal') {
+      const iter = entry.iterations;
+      return `
+        <div class="history-card">
+          <div class="history-card-header">
+            <span class="history-objective">${objStr}</span>
+            <span class="history-date">${entry.date}</span>
+          </div>
+          <div class="history-result">
+            <span>x₁ = <strong>${entry.x1}</strong></span>
+            <span>x₂ = <strong>${entry.x2}</strong></span>
+            <span>Z = <strong>${entry.z}</strong></span>
+            <span>${iter} iteração${iter !== 1 ? 'ões' : ''}</span>
+          </div>
+        </div>`;
+    }
+
+    const msg = entry.status === 'unbounded' ? 'Problema ilimitado' : 'Sem solução viável';
+    return `
+      <div class="history-card">
+        <div class="history-card-header">
+          <span class="history-objective">${objStr}</span>
+          <span class="history-date">${entry.date}</span>
+        </div>
+        <div class="history-status-error">${msg}</div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('clearHistory').addEventListener('click', () => {
+  if (!confirm('Deseja limpar todo o histórico?')) return;
+  localStorage.removeItem('simplex_history');
+  renderHistory();
+  renderProfile();
+});
+
+// ── Navegação por abas ──
+
+// Alterna a aba visível e atualiza o estado ativo no navbar.
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+    if (tab.dataset.tab === 'history') renderHistory();
+    if (tab.dataset.tab === 'profile') renderProfile();
+  });
+});
+
+// ── Listeners da calculadora ──
 
 document.getElementById('addConstraint').addEventListener('click', () => {
   if (numConstraints >= MAX_CONSTRAINTS) return;
@@ -179,9 +337,10 @@ document.getElementById('removeConstraint').addEventListener('click', () => {
   list.removeChild(list.lastChild);
 });
 
-document.getElementById('solveBtn').addEventListener('click', solve);
+document.getElementById('solveBtn').addEventListener('click', () => solve(true));
 document.getElementById('resetBtn').addEventListener('click', reset);
 
-// Renderiza as restrições e já executa o Simplex ao carregar a página
+// Inicializa perfil, renderiza restrições e executa o Simplex ao carregar a página
+initProfile();
 renderConstraints();
 solve();
